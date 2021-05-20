@@ -6,12 +6,9 @@ var element = webdriver.WebElement;
 var firefox = require("selenium-webdriver/firefox");
 require("geckodriver");
 
-const URL =
-  "https://www.linkedin.com/search/results/people/?currentCompany=%5B%221035%22%5D&geoUrn=%5B%22103644278%22%2C%22101174742%22%5D&keywords=project%20manager%20microsoft&origin=FACETED_SEARCH";
-const pageCount = 30;
-const numOfConnections = 5;
+async function LinkedInFirefox(URL, numOfConnections) {
+  const pageCount = 30;
 
-async function LinkedInFirefox() {
   try {
     var options = new firefox.Options();
     options.setProfile(
@@ -62,18 +59,25 @@ async function LinkedInFirefox() {
           5000
         ),
       ]).then(async () => {
-        totalConnected += await connect(driver, totalConnected);
+        totalConnected += await connect(
+          driver,
+          totalConnected,
+          numOfConnections
+        );
       });
     }
 
-    console.log("Total Connected = ", ">>>>>>>>>>>", totalConnected);
+    console.log("Total New Connections = ", totalConnected);
+    await driver.get(
+      "https://www.linkedin.com/mynetwork/invitation-manager/sent/"
+    );
   } catch (e) {
-    console.log("error is >>>>>", e);
+    throw e;
   }
 }
 
 //Connect with all on each page
-async function connect(driver, totalConnected) {
+async function connect(driver, totalConnected, numOfConnections) {
   let connectButtons = await driver.findElements(
     By.xpath("//span[text()[contains(.,'Connect')]]")
   );
@@ -83,7 +87,6 @@ async function connect(driver, totalConnected) {
     if (totalConnected >= numOfConnections) {
       break;
     }
-    console.log(connectButtons);
     await connectButtons[i].click();
     await driver.wait(
       until.elementIsVisible(
@@ -107,9 +110,9 @@ async function connect(driver, totalConnected) {
 
     totalConnectedPerPage += 1;
     totalConnected += 1;
-    console.log("totalConnectedPerPage", totalConnectedPerPage);
+    //console.log("totalConnectedPerPage", totalConnectedPerPage);
   }
   return totalConnectedPerPage;
 }
 
-LinkedInFirefox();
+module.exports = LinkedInFirefox;

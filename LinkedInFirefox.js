@@ -1,10 +1,13 @@
 var webdriver = require("selenium-webdriver");
+require("geckodriver");
+var firefox = require("selenium-webdriver/firefox");
+var connectionLogs = require("./connectionsLog");
+var withdrawRequests = require("./WithdrawRequests");
+
 var until = webdriver.until;
 var By = webdriver.By;
 var Key = webdriver.Key;
 var element = webdriver.WebElement;
-var firefox = require("selenium-webdriver/firefox");
-require("geckodriver");
 
 async function LinkedInFirefox(URL, numOfConnections) {
   const pageCount = 30;
@@ -20,57 +23,59 @@ async function LinkedInFirefox(URL, numOfConnections) {
 
     driver.wait(until.titleContains("LinkedIn"));
 
-    let totalConnected = 0;
-    for (let i = 1; i < pageCount + 1; i++) {
-      if (totalConnected >= numOfConnections) {
-        break;
-      }
+    withdrawRequests(driver);
 
-      let pageURL = i === 1 ? URL : URL + `&page=${i}`;
+    // let totalConnected = 0;
+    // for (let i = 1; i < pageCount + 1; i++) {
+    //   if (totalConnected >= numOfConnections) {
+    //     break;
+    //   }
 
-      await driver.get(pageURL);
+    //   let pageURL = i === 1 ? URL : URL + `&page=${i}`;
 
-      await driver.wait(function () {
-        return driver
-          .executeScript("return document.readyState")
-          .then(function (readyState) {
-            return readyState === "complete";
-          });
-      });
+    //   await driver.get(pageURL);
 
-      // Wait for any of the 3 buttons (i.e. wait for the page to fully load). Regular page load here won't work due to LinkedIn's async API calls post page load
-      await Promise.race([
-        driver.wait(
-          until.elementsLocated(
-            By.xpath("//span[text()[contains(.,'Connect')]]")
-          ),
-          5000
-        ),
-        driver.wait(
-          until.elementsLocated(
-            By.xpath("//span[text()[contains(.,'Message')]]")
-          ),
-          5000
-        ),
-        driver.wait(
-          until.elementsLocated(
-            By.xpath("//span[text()[contains(.,'Pending')]]")
-          ),
-          5000
-        ),
-      ]).then(async () => {
-        totalConnected += await connect(
-          driver,
-          totalConnected,
-          numOfConnections
-        );
-      });
-    }
+    //   await driver.wait(function () {
+    //     return driver
+    //       .executeScript("return document.readyState")
+    //       .then(function (readyState) {
+    //         return readyState === "complete";
+    //       });
+    //   });
 
-    console.log("Total New Connections = ", totalConnected);
-    await driver.get(
-      "https://www.linkedin.com/mynetwork/invitation-manager/sent/"
-    );
+    //   // Wait for any of the 3 buttons (i.e. wait for the page to fully load). Regular page load here won't work due to LinkedIn's async API calls post page load
+    //   await Promise.race([
+    //     driver.wait(
+    //       until.elementsLocated(
+    //         By.xpath("//span[text()[contains(.,'Connect')]]")
+    //       ),
+    //       5000
+    //     ),
+    //     driver.wait(
+    //       until.elementsLocated(
+    //         By.xpath("//span[text()[contains(.,'Message')]]")
+    //       ),
+    //       5000
+    //     ),
+    //     driver.wait(
+    //       until.elementsLocated(
+    //         By.xpath("//span[text()[contains(.,'Pending')]]")
+    //       ),
+    //       5000
+    //     ),
+    //   ]).then(async () => {
+    //     totalConnected += await connect(
+    //       driver,
+    //       totalConnected,
+    //       numOfConnections
+    //     );
+    //   });
+    // }
+
+    // console.log("Total New Connections = ", totalConnected);
+    // await driver.get(
+    //   "https://www.linkedin.com/mynetwork/invitation-manager/sent/"
+    // );
   } catch (e) {
     throw e;
   }

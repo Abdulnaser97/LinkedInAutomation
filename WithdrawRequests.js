@@ -1,7 +1,7 @@
 var webdriver = require("selenium-webdriver");
 require("geckodriver");
 var firefox = require("selenium-webdriver/firefox");
-var logConnections = require("./connectionsLog");
+const { logConnections } = require("./connectionsLog");
 
 var until = webdriver.until;
 var By = webdriver.By;

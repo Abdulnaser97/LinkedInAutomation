@@ -1,6 +1,6 @@
-XLSX = require("xlsx");
+const XLSX = require("xlsx");
 
-function logConnections(conns) {
+async function logConnections(conns) {
   const fileName = "connectionsLog";
 
   var workbook = null;
@@ -28,7 +28,7 @@ function logConnections(conns) {
 
   for (var conn of conns) {
     /* Append row */
-    XLSX.utils.sheet_add_json(
+    await XLSX.utils.sheet_add_json(
       worksheet,
       [{ A: `${conn.name}`, B: `${conn.href}`, C: `${date}` }],
       {
@@ -42,4 +42,33 @@ function logConnections(conns) {
   XLSX.writeFile(workbook, `${fileName}.xls`); // Save the file
 }
 
-module.exports = logConnections;
+// Retrieve past requests stored in the xlsx file and convert them array of JSON objects to
+
+async function getPastRequests() {
+  const fileName = "connectionsLog";
+
+  var workbook = null;
+
+  try {
+    workbook = XLSX.readFile(`${fileName}.xls`);
+  } catch (e) {
+    throw new Error("Couldn't load workbook");
+  }
+
+  var first_sheet_name = workbook.SheetNames[0];
+
+  /* Get worksheet */
+  let worksheet = workbook.Sheets[first_sheet_name];
+
+  // Get the names column
+  const pastRequests = await XLSX.utils.sheet_to_json(worksheet, {
+    header: "A",
+  });
+
+  return pastRequests;
+}
+
+module.exports = {
+  logConnections,
+  getPastRequests,
+};

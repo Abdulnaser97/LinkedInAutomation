@@ -23,6 +23,9 @@ async function LinkedInFirefox(URL, numOfConnections) {
 
   await withdrawRequests(driver);
   await sendConnectionRequests(driver, URL, numOfConnections);
+  await driver.get(
+    "https://www.linkedin.com/mynetwork/invitation-manager/sent/"
+  );
 }
 
 async function sendConnectionRequests(driver, URL, numOfConnections) {

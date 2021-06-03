@@ -106,35 +106,37 @@ async function connect(driver, totalConnected, numOfConnections) {
     );
 
     if (!hasAlreadyBeenSentARequest) {
-      const connectButton = await searchResults[i].findElement(
+      const connectButtons = await searchResults[i].findElements(
         By.xpath(`.//span[text()[contains(.,'Connect')]]`)
       );
 
-      await connectButton.click();
+      if (connectButtons.length != 0) {
+        await connectButtons[0].click();
 
-      await driver.wait(
-        until.elementIsVisible(
-          driver.findElement(By.xpath("//*[@id='send-invite-modal']"))
-        )
-      );
+        await driver.wait(
+          until.elementIsVisible(
+            driver.findElement(By.xpath("//*[@id='send-invite-modal']"))
+          )
+        );
 
-      // CancelButton For testing "//button[@aria-label='Dismiss']//li-icon[@type='cancel-icon']"
-      let sendButtons = await driver.findElements(
-        By.xpath("//span[text()[contains(.,'Send')]]")
-      );
+        // CancelButton For testing "//button[@aria-label='Dismiss']//li-icon[@type='cancel-icon']"
+        let sendButtons = await driver.findElements(
+          By.xpath("//span[text()[contains(.,'Send')]]")
+        );
 
-      var overlayLayer = driver.findElement(
-        By.xpath(
-          "//*[@class='artdeco-modal-overlay artdeco-modal-overlay--layer-default artdeco-modal-overlay--is-top-layer  ember-view']"
-        )
-      );
-      // Send the LinkedIn Connection Request
-      await sendButtons[0].click();
+        var overlayLayer = driver.findElement(
+          By.xpath(
+            "//*[@class='artdeco-modal-overlay artdeco-modal-overlay--layer-default artdeco-modal-overlay--is-top-layer  ember-view']"
+          )
+        );
+        // Send the LinkedIn Connection Request
+        await sendButtons[0].click();
 
-      await driver.wait(until.stalenessOf(overlayLayer));
+        await driver.wait(until.stalenessOf(overlayLayer));
 
-      totalConnectedPerPage += 1;
-      totalConnected += 1;
+        totalConnectedPerPage += 1;
+        totalConnected += 1;
+      }
     }
   }
   return totalConnectedPerPage;

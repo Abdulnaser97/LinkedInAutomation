@@ -75,7 +75,7 @@ async function cancelRequests(driver) {
 
     for (let i = 0; i < invitationCards.length; i++) {
       let requestAge = await invitationCards[i].findElements(
-        By.xpath(".//time[text()[contains(.,'week')]]")
+        By.xpath(".//time[text()[contains(.,'weeks')]]")
       );
 
       // If request has been sent for more than a week, store the name in excel sheet and withdraw invitation

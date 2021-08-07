@@ -2,6 +2,7 @@ var webdriver = require("selenium-webdriver");
 require("geckodriver");
 var firefox = require("selenium-webdriver/firefox");
 const { logConnections } = require("./connectionsLog");
+const Login = require("./Login");
 
 var until = webdriver.until;
 var By = webdriver.By;
@@ -21,6 +22,8 @@ async function withdrawRequests(driver) {
         pageNumber === 1 ? URL : URL + `?invitationType=&page=${pageNumber}`;
 
       await driver.get(pageURL);
+
+      await Login(driver);
 
       await driver.wait(function () {
         return driver
@@ -118,8 +121,11 @@ async function cancelRequests(driver) {
 // Confirm individual contact withdrawal
 async function confirmWithdrawal(driver, name) {
   try {
+    const htmlName = name.replace(`'`, `&#39;`);
     const withdrawButton = await driver.findElement(
-      By.xpath(`.//button[@aria-label='Withdraw invitation sent to ${name}']`)
+      By.xpath(
+        `.//button[@aria-label='Withdraw invitation sent to ${htmlName}']`
+      )
     );
 
     await withdrawButton.click();

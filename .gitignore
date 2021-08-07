@@ -2,3 +2,5 @@ node_modules
 
 #xlsx file name here
 connectionsLog.xls
+
+.env

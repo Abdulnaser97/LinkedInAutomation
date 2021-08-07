@@ -20,6 +20,9 @@ process.argv.forEach((val, index) => {
 });
 
 try {
+  console.log(`URL: ${properties[0].value}`);
+  console.log(`numOfConnections: ${properties[1].value}`);
+
   LinkedInFirefox(properties[0].value, properties[1].value);
   console.log(properties[0].value, properties[1].value);
 } catch (e) {
